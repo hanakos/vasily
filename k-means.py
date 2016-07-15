@@ -159,15 +159,20 @@ def get_user_score(recom_data,user_data):
 		user_data[i][-1] = u_score
 	return user_data
 
-def  get_recommend(key_data,recomend_movie_id_uniq):
+def  get_recommend(key_data,recomend_movie_id_uniq,movie_cluster_data):
 	f = open('u.item', 'r')
 	movie = []
 	for line in f:
 		movie.append(line)
 	print key_data
+	for  i in range(len(key_data)):
+		if key_data[i] == 5:
+			cluster = movie_cluster_data[i][-1]
+			#print cluster
+			pass
 	for j in range(len(recomend_movie_id_uniq)):
-		print int(recomend_movie_id_uniq[j])
-		if key_data[int(recomend_movie_id_uniq[j])] == 0 :
+		#print int(recomend_movie_id_uniq[j])
+		if key_data[int(recomend_movie_id_uniq[j])] == 0 and movie_cluster_data[j][-1] == cluster:
 			print movie[j] 
 	print "finish"
 	
@@ -276,7 +281,7 @@ if __name__ == "__main__":
 	recomend_movie_id_uniq = list(set(recomend_movie_id))
 	print recomend_movie_id_uniq
 
-	get_recommend(rep_data[1],recomend_movie_id_uniq)
+	get_recommend(rep_data[1],recomend_movie_id_uniq,movie_cluster_data)
 
 
 
