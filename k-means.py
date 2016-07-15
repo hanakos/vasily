@@ -164,31 +164,20 @@ def  get_recommend(key_data,recomend_movie_id_uniq,movie_cluster_data):
 	movie = []
 	for line in f:
 		movie.append(line)
-	print key_data
 	for  i in range(len(key_data)):
 		if key_data[i] == 5:
 			cluster = movie_cluster_data[i][-1]
-			#print cluster
 			pass
 	for j in range(len(recomend_movie_id_uniq)):
-		#print int(recomend_movie_id_uniq[j])
 		if key_data[int(recomend_movie_id_uniq[j])] == 0 and movie_cluster_data[j][-1] == cluster:
 			print movie[j] 
-	print "finish"
 	
 
 if __name__ == "__main__":	
 	####make and arrange data
 	rep_data = get_user_reputation_data()
-	print len(rep_data)
-	print len(rep_data[1])
 	movie_data = get_movie_data()
-	print len(movie_data)
-	print len(movie_data[1])
 	user_data = get_user_data()
-	print len(user_data)
-	print len(user_data[1])
-	#print rep_data[1][202]
 
 	for i in range(len(rep_data)):
 		for j in range(len(rep_data[0])):
@@ -201,35 +190,44 @@ if __name__ == "__main__":
 		for j in range(len(movie_data[0])):
 			movie_data[i][j]=int(movie_data[i][j])
 
-	####clustering get score (recom_data and user_data)
+	####get clustering data (recom_data)
 	######
 	k = 20
 	d = cluster(rep_data,k)
+	cd = []
 	d = cluster_update(d,k)
-	print "update"
+	cd.append(d[0])
+	#print "update"
 	d = cluster_update(d[0],k)
-	print "ok1"
-	d = cluster_update(d[0],k)
-	print "ok2"
+	cd.append(d[0])
+	while cd[-1] != cd [-2]:
+		d = cluster_update(d[0],k)
+		cd.append(d[0])
 	jushin = d[1]
 	cluster_data = d[0]
-	###get_score
-	key_data = rep_data[0]
+	#####key_data is target's rep_data
+	key_data = rep_data[1]
+	####give cluster score to each data
 	jushin_score = get_cluster_score(key_data,jushin)
 	rep_score = get_item_score(cluster_data,jushin_score)
 
-
+	####get clustering data (recom_data)
 	d = cluster(user_data,k)
+	cd = []
 	d = cluster_update(d,k)
-	print "update_user"
+	cd.append(d[0])
+	#print "update_user"
 	d = cluster_update(d[0],k)
-	print "ok1"
-	d = cluster_update(d[0],k)
-	print "ok2"
+	cd.append(d[0])
+	####cluster update
+	while cd[-1] != cd [-2]:
+		d = cluster_update(d[0],k)
+		cd.append(d[0])
 	jushin = d[1]
 	cluster_data = d[0]
-	####get_score
-	key_data = user_data[0]
+	#####key_data is target's rep_data
+	key_data = user_data[1]
+	####give cluster score to each data
 	jushin_score = get_cluster_score(key_data,jushin)
 	demo_score = get_item_score(cluster_data,jushin_score)
 
@@ -239,15 +237,19 @@ if __name__ == "__main__":
 	##clustering in movie data
 	
 	d = cluster(movie_data,k)
+	cd = []
 	d = cluster_update(d,k)
-	print "updatee"
+	cd.append(d[0])
+	#print "updatee"
 	d = cluster_update(d[0],k)
-	d = cluster_update(d[0],k)
+	cd.append(d[0])
+	####cluster update
+	while cd[-1] != cd [-2]:
+		d = cluster_update(d[0],k)
+		cd.append(d[0])
+
 	jushin = d[1]
 	movie_cluster_data = d[0]
-
-	print "movie"
-	print d[0]
 
 	#keyman = ##### now key man = data[0]
 	##get key_man's high score movie
@@ -255,11 +257,7 @@ if __name__ == "__main__":
 	#key_data = ####key_man's reputation data 
 	###get high score users -> score is k
 	####and get high score users id
-	print "user_score"
-	print user_score
 	high_user = [i for i in user_score if i[-1] == k]
-	print "high_user"
-	print high_user
 	high_user_index = []
 	for i in range(len(high_user)):
 		for j in range(len(user_score)):
@@ -267,8 +265,6 @@ if __name__ == "__main__":
 				high_user_index.append(j)
 			else:
 				pass
-	print "high_user_index"
-	print high_user_index
 	
 	###get movie id which high_user rate is 5
 	recomend_movie_id = []
@@ -279,7 +275,6 @@ if __name__ == "__main__":
 			recomend_movie_id.append(movie_id[j])
 	
 	recomend_movie_id_uniq = list(set(recomend_movie_id))
-	print recomend_movie_id_uniq
 
 	get_recommend(rep_data[1],recomend_movie_id_uniq,movie_cluster_data)
 
